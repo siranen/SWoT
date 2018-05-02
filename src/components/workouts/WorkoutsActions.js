@@ -23,11 +23,21 @@ const workoutsDelete = (id) => ({
     id: id
 })
 
-export const fetchWorkouts = () => (dispatch, getState) => {
+export const fetchWorkouts = () => {
     return new Promise((resolve, reject) => {
         api.get(endpoint)
         .then(response => {
-            dispatch(workoutsGet(response.data));
+            resolve(response);
+        }, error => {
+            reject('API error: ' + error);
+        });    
+    });
+}
+
+export const fetchWorkout = (id) => {
+    return new Promise((resolve, reject) => {
+        api.get(endpoint + '/' + id)
+        .then(response => {
             resolve(response);
         }, error => {
             reject('API error: ' + error);
