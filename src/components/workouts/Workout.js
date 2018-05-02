@@ -39,6 +39,7 @@ class Workout extends Component {
         
         fetchWorkout(this.props.match.params.id)
         .then(response => {
+            console.log(response);
             this.setState({ 
                 workout: response.data,
                 api: { isExecuting: false, isErrored: false }
@@ -56,7 +57,7 @@ class Workout extends Component {
             updateWorkout(workout)
             .then(response => {
                 this.setState({ workout: response.data });
-                
+
                 if (notify.show) {
                     this.props.showSnackbar(notify.caption);
                 }
@@ -71,7 +72,7 @@ class Workout extends Component {
 
     handleWorkoutDelete = (workout) => {
         return new Promise((resolve, reject) => {
-            this.props.deleteWorkout(workout.id)
+            deleteWorkout(workout.id)
             .then(response => {
                 this.props.showSnackbar('Deleted Workout');
                 resolve(response);
@@ -111,8 +112,8 @@ class Workout extends Component {
     render() {
         return (
             this.state.api.isExecuting ? <CircularProgress style={styles.icon} /> : 
-                this.state.api.isErrored ? <ActionHighlightOff style={{ ...styles.icon, color: red500 }} /> :
-                    this.state.workout === undefined ? <span>Invalid Workout Id.</span> : 
+                this.state.api.isErrored ? 
+                    <ActionHighlightOff style={{ ...styles.icon, color: red500 }} /> :
                     this.state.workout.endTime === undefined ?
                             <WorkoutCard
                                 workout={this.state.workout}

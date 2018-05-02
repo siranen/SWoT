@@ -27,7 +27,12 @@ export const fetchWorkouts = () => {
     return new Promise((resolve, reject) => {
         api.get(endpoint)
         .then(response => {
-            resolve(response);
+            if (response.status === 200) {
+                resolve(response);
+            }
+            else {
+                reject(response);
+            }
         }, error => {
             reject('API error: ' + error);
         });    
@@ -38,7 +43,12 @@ export const fetchWorkout = (id) => {
     return new Promise((resolve, reject) => {
         api.get(endpoint + '/' + id)
         .then(response => {
-            resolve(response);
+            if (response.status === 200) {
+                resolve(response);
+            }
+            else {
+                reject(response);
+            }
         }, error => {
             reject('API error: ' + error);
         });    
@@ -78,12 +88,11 @@ export const updateWorkout = (workout) => {
     });
 }
 
-export const deleteWorkout = (id) => (dispatch, getState) => {
+export const deleteWorkout = (id) => {
     return new Promise((resolve, reject) => {
         api.delete(endpoint + '/' + id)
         .then(response => {
             if (response.status === 204) {
-                dispatch(workoutsDelete(id));
                 resolve(response);
             }
             else {
