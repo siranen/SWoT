@@ -53,8 +53,10 @@ class Workout extends Component {
 
     handleWorkoutChange = (workout, notify = { show: false, caption: ''}) => {
         return new Promise((resolve, reject) => {
-            this.props.updateWorkout(workout)
+            updateWorkout(workout)
             .then(response => {
+                this.setState({ workout: response.data });
+                
                 if (notify.show) {
                     this.props.showSnackbar(notify.caption);
                 }
