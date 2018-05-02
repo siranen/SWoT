@@ -5,7 +5,7 @@ import { red500 } from 'material-ui/styles/colors'
 import CircularProgress from 'material-ui/CircularProgress'
 import ActionHighlightOff from 'material-ui/svg-icons/action/highlight-off'
 
-import { fetchWorkouts, updateWorkout, deleteWorkout } from '../workouts/WorkoutsActions'
+import { fetchWorkout, updateWorkout, deleteWorkout } from '../workouts/WorkoutsActions'
 import { showSnackbar } from '../app/AppActions';
 
 import WorkoutCard from './WorkoutCard'
@@ -37,13 +37,17 @@ class Workout extends Component {
     componentWillMount = () => {
         this.setState({ api: { ...this.state.api, isExecuting: true }})
         
-        this.props.fetchWorkouts()
+        fetchWorkout(this.props.match.params.id)
         .then(response => {
             this.setState({ 
+                workout: response.data,
                 api: { isExecuting: false, isErrored: false }
             })
         }, error => {
-            this.setState({ api: { isExecuting: false, isErrored: true }})
+            this.setState({ 
+                workout: undefined,
+                api: { isExecuting: false, isErrored: true }
+            })
         })
     }
 
@@ -103,21 +107,19 @@ class Workout extends Component {
     }
 
     render() {
-        let workout = this.props.workouts.find(w => w.id === this.props.match.params.id)
-
         return (
             this.state.api.isExecuting ? <CircularProgress style={styles.icon} /> : 
                 this.state.api.isErrored ? <ActionHighlightOff style={{ ...styles.icon, color: red500 }} /> :
-                    workout === undefined ? <span>Invalid Workout Id.</span> : 
-                        workout.endTime === undefined ?
+                    this.state.workout === undefined ? <span>Invalid Workout Id.</span> : 
+                    this.state.workout.endTime === undefined ?
                             <WorkoutCard
-                                workout={workout}
+                                workout={this.state.workout}
                                 onWorkoutChange={this.handleWorkoutChange}
-                                onExerciseChange={(exercise) => this.handleWorkoutExerciseChange(workout, exercise)}
-                                onDelete={() => this.handleWorkoutDelete(workout)}
-                                onReset={() => this.handleWorkoutReset(workout)}
+                                onExerciseChange={(exercise) => this.handleWorkoutExerciseChange(this.state.workout, exercise)}
+                                onDelete={() => this.handleWorkoutDelete(this.state.workout)}
+                                onReset={() => this.handleWorkoutReset(this.state.workout)}
                             /> :
-                            <WorkoutReportCard workout={workout}/>
+                            <WorkoutReportCard workout={this.state.workout}/>
         )
     }
 }
@@ -127,7 +129,6 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-    fetchWorkouts,
     updateWorkout,
     deleteWorkout,
     showSnackbar,
