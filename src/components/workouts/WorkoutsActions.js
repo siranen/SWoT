@@ -62,12 +62,11 @@ export const addWorkout = (workout) => (dispatch, getState) => {
     });
 }
 
-export const updateWorkout = (workout) => (dispatch, getState) => {
+export const updateWorkout = (workout) => {
     return new Promise((resolve, reject) => {
         api.put(endpoint + "/" + workout.id, workout)
         .then(response => {
             if (response.status === 200) {
-                dispatch(workoutsPut(response.data));
                 resolve(response);
             }
             else {
