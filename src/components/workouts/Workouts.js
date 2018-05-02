@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import { fetchWorkouts } from './WorkoutsActions'
 
@@ -17,6 +16,7 @@ import ActionInfo from 'material-ui/svg-icons/action/info'
 import WorkoutList from './WorkoutList'
 
 const initialState = {
+    workouts: [],
     api: {
         isExecuting: false,
         isErrored: false,
@@ -44,9 +44,9 @@ class Workouts extends Component {
     componentWillMount() {
         this.setState({ api: { ...this.state.api, isExecuting: true }})
 
-        this.props.fetchWorkouts()
+        fetchWorkouts()
             .then(response => {
-                this.setState({ api: { isExecuting: false, isErrored: false }})
+                this.setState({ workouts: response.data, api: { isExecuting: false, isErrored: false }})
             }, error => {
                 this.setState({ api: { isExecuting: false, isErrored: true }})
             })
@@ -69,7 +69,7 @@ class Workouts extends Component {
                             title={'In Progress'}
                             icon={<AVPlayArrow/>}
                             itemRightIcon={<AVPlayArrow/>}
-                            workouts={this.props.workouts.filter(workout => workout.startTime !== undefined && workout.endTime === undefined)}
+                            workouts={this.state.workouts.filter(workout => workout.startTime !== undefined && workout.endTime === undefined)}
                             sort={'desc'}
                             timePrefix={'Started'}
                             timeField={'startTime'}
@@ -79,7 +79,7 @@ class Workouts extends Component {
                             title={'Scheduled'}
                             icon={<ActionSchedule/>}
                             itemRightIcon={<AVPlayArrow/>}
-                            workouts={this.props.workouts.filter(workout => workout.startTime === undefined)}
+                            workouts={this.state.workouts.filter(workout => workout.startTime === undefined)}
                             sort={'asc'}
                             timePrefix={'Scheduled for'}
                             timeField={'scheduledTime'}
@@ -89,7 +89,7 @@ class Workouts extends Component {
                             title={'Completed'}
                             icon={<ActionDone/>}
                             itemRightIcon={<ActionInfo/>}
-                            workouts={this.props.workouts.filter(workout => workout.endTime !== undefined)}
+                            workouts={this.state.workouts.filter(workout => workout.endTime !== undefined)}
                             sort={'desc'}
                             timePrefix={'Completed'}
                             timeField={'endTime'}
@@ -101,12 +101,4 @@ class Workouts extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    workouts: state.workouts
-})
-
-const mapDispatchToProps = {
-    fetchWorkouts
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Workouts)
+export default Workouts
